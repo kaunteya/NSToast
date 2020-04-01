@@ -1,4 +1,5 @@
 import Cocoa
+import NSMaterialButton
 
 public final class NSToast: NSView {
     enum `Type` {
@@ -62,7 +63,7 @@ public final class NSToast: NSView {
             stack.leftAnchor.constraint(equalTo: leftAnchor, constant: 5)
         ])
 
-        closeButton = HighlightButton(image: #imageLiteral(resourceName: "Close"), target: self, action: #selector(self.closeButtonTap))
+        closeButton = NSMaterialButton(image: #imageLiteral(resourceName: "Close"), target: self, action: #selector(self.closeButtonTap))
         closeButton.bezelStyle = .regularSquare
         closeButton.isTransparent = true
         addSubview(closeButton)

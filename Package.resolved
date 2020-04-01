@@ -1,0 +1,16 @@
+{
+  "object": {
+    "pins": [
+      {
+        "package": "NSMaterialButton",
+        "repositoryURL": "https://github.com/kaunteya/NSMaterialButton",
+        "state": {
+          "branch": "master",
+          "revision": "a61ba5a232cc60f02cd8b64eb89b23a7d7a2b329",
+          "version": null
+        }
+      }
+    ]
+  },
+  "version": 1
+}
