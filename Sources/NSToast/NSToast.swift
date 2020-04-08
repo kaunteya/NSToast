@@ -13,12 +13,12 @@ public final class NSToast: NSView {
     public static var timeInterval: TimeInterval = 4
     private var closeButton: NSButton!
 
-    public override var wantsUpdateLayer: Bool { true }
-
     private init(type: Type, title: String, detail: String? = nil) {
         super.init(frame: .zero)
+        wantsLayer = true
         self.widthAnchor.constraint(lessThanOrEqualToConstant: 500).isActive = true
-        self.layer?.backgroundColor = NSColor.textBackgroundColor.cgColor
+        widthAnchor.constraint(greaterThanOrEqualToConstant: 200).isActive = true
+        self.layer?.backgroundColor = NSColor.windowBackgroundColor.cgColor
 
         let messageTypeIndicatorBar = NSView(frame: .zero)
         messageTypeIndicatorBar.wantsLayer = true
@@ -96,7 +96,7 @@ public final class NSToast: NSView {
 
     private static func show(type: Type, title: String, detail: String? = nil) {
         if viewStack.superview == nil {
-            if let contentView = NSApplication.shared.keyWindow?.contentView {
+            if let contentView = NSApplication.shared.mainWindow?.contentView {
                 contentView.addSubview(viewStack)
                 viewStack.orientation = .vertical
                 viewStack.translatesAutoresizingMaskIntoConstraints = false
