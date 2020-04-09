@@ -8,10 +8,10 @@ public final class NSToast: NSView {
 
         var color: NSColor { Self.dict[self]! }
     }
-
     private static var viewStack = NSStackView()
     public static var timeInterval: TimeInterval = 4
     private var closeButton: NSButton!
+    public static var contentView = NSApplication.shared.mainWindow?.contentView
 
     private init(type: Type, title: String, detail: String? = nil) {
         super.init(frame: .zero)
@@ -96,7 +96,7 @@ public final class NSToast: NSView {
 
     private static func show(type: Type, title: String, detail: String? = nil) {
         if viewStack.superview == nil {
-            if let contentView = NSApplication.shared.mainWindow?.contentView {
+            if let contentView = contentView {
                 contentView.addSubview(viewStack)
                 viewStack.orientation = .vertical
                 viewStack.translatesAutoresizingMaskIntoConstraints = false
