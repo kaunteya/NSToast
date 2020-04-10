@@ -99,20 +99,28 @@ public final class NSToast: NSView {
         action?()
     }
 
-    public static func info(_ title: String, detail: String? = nil, primaryAction: String? = nil, onAction: (() -> ())? = nil) {
-        show(type: .info, title: title, detail: detail, primaryAction: primaryAction, onAction: onAction)
+    public static func info(_ title: String, detail: String? = nil, primaryAction: String? = nil, onAction: (() -> ())? = nil, uniqueDisplayId: String? = nil) {
+        show(type: .info, title: title, detail: detail, primaryAction: primaryAction, onAction: onAction, uniqueDisplayId: uniqueDisplayId)
     }
-    public static func success(_ title: String, detail: String? = nil, primaryAction: String? = nil, onAction: (() -> ())? = nil) {
-        show(type: .success, title: title, detail: detail, primaryAction: primaryAction, onAction: onAction)
+    public static func success(_ title: String, detail: String? = nil, primaryAction: String? = nil, onAction: (() -> ())? = nil, uniqueDisplayId: String? = nil) {
+        show(type: .success, title: title, detail: detail, primaryAction: primaryAction, onAction: onAction, uniqueDisplayId: uniqueDisplayId)
     }
-    public static func warning(_ title: String, detail: String? = nil, primaryAction: String? = nil, onAction: (() -> ())? = nil) {
-        show(type: .warning, title: title, detail: detail, primaryAction: primaryAction, onAction: onAction)
+    public static func warning(_ title: String, detail: String? = nil, primaryAction: String? = nil, onAction: (() -> ())? = nil, uniqueDisplayId: String? = nil) {
+        show(type: .warning, title: title, detail: detail, primaryAction: primaryAction, onAction: onAction, uniqueDisplayId: uniqueDisplayId)
     }
-    public static func error(_ title: String, detail: String? = nil, primaryAction: String? = nil, onAction: (() -> ())? = nil) {
-        show(type: .error, title: title, detail: detail, primaryAction: primaryAction, onAction: onAction)
+    public static func error(_ title: String, detail: String? = nil, primaryAction: String? = nil, onAction: (() -> ())? = nil, uniqueDisplayId: String? = nil) {
+        show(type: .error, title: title, detail: detail, primaryAction: primaryAction, onAction: onAction, uniqueDisplayId: uniqueDisplayId)
     }
 
-    private static func show(type: Type, title: String, detail: String? = nil, primaryAction: String? = nil, onAction: (() -> ())? = nil) {
+    private static func show(type: Type, title: String, detail: String? = nil, primaryAction: String? = nil, onAction: (() -> ())? = nil, uniqueDisplayId: String? = nil) {
+        if let uniqueDisplayId = uniqueDisplayId {
+            if UserDefaults.standard.string(forKey: uniqueDisplayId) != nil {
+                return
+            } else {
+                UserDefaults.standard.set(true, forKey: uniqueDisplayId)
+            }
+        }
+
         if viewStack.superview == nil {
             if let contentView = contentView {
                 contentView.addSubview(viewStack)
