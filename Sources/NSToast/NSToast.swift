@@ -15,8 +15,9 @@ public final class NSToast: NSView {
     public static var timeInterval: TimeInterval = 4
     private var closeButton: NSButton!
     public static var contentView = NSApplication.shared.mainWindow?.contentView
+    var action: (() -> ())?
 
-    private init(type: Type, title: String, detail: String? = nil) {
+    private init(type: Type, title: String, detail: String? = nil, primaryAction: String? = nil, onAction: (() -> ())? = nil) {
         super.init(frame: .zero)
         wantsLayer = true
         widthAnchor.constraint(greaterThanOrEqualToConstant: minWidth).isActive = true
@@ -68,6 +69,14 @@ public final class NSToast: NSView {
             stack.leftAnchor.constraint(equalTo: leftAnchor, constant: 5)
         ])
 
+        if let primaryButtonString = primaryAction, primaryButtonString.isEmpty == false {
+            let button = NSButton(title: primaryButtonString, target: self, action: #selector(primaryButtonTap(_:)))
+            button.controlSize = .small
+            button.font = .systemFont(ofSize: NSFont.smallSystemFontSize)
+            stack.addArrangedSubview(button)
+            action = onAction
+        }
+
         closeButton = NSMaterialButton(image: #imageLiteral(resourceName: "Close"), target: self, action: #selector(self.closeButtonTap))
         closeButton.bezelStyle = .regularSquare
         closeButton.isTransparent = true
@@ -86,20 +95,24 @@ public final class NSToast: NSView {
         removeFromSuperview()
     }
 
-    public static func info(_ title: String, detail: String? = nil) {
-        show(type: .info, title: title, detail: detail)
-    }
-    public static func success(_ title: String, detail: String? = nil) {
-        show(type: .success, title: title, detail: detail)
-    }
-    public static func warning(_ title: String, detail: String? = nil) {
-        show(type: .warning, title: title, detail: detail)
-    }
-    public static func error(_ title: String, detail: String? = nil) {
-        show(type: .error, title: title, detail: detail)
+    @objc private func primaryButtonTap(_ sender: NSButton) {
+        action?()
     }
 
-    private static func show(type: Type, title: String, detail: String? = nil) {
+    public static func info(_ title: String, detail: String? = nil, primaryAction: String? = nil, onAction: (() -> ())? = nil) {
+        show(type: .info, title: title, detail: detail, primaryAction: primaryAction, onAction: onAction)
+    }
+    public static func success(_ title: String, detail: String? = nil, primaryAction: String? = nil, onAction: (() -> ())? = nil) {
+        show(type: .success, title: title, detail: detail, primaryAction: primaryAction, onAction: onAction)
+    }
+    public static func warning(_ title: String, detail: String? = nil, primaryAction: String? = nil, onAction: (() -> ())? = nil) {
+        show(type: .warning, title: title, detail: detail, primaryAction: primaryAction, onAction: onAction)
+    }
+    public static func error(_ title: String, detail: String? = nil, primaryAction: String? = nil, onAction: (() -> ())? = nil) {
+        show(type: .error, title: title, detail: detail, primaryAction: primaryAction, onAction: onAction)
+    }
+
+    private static func show(type: Type, title: String, detail: String? = nil, primaryAction: String? = nil, onAction: (() -> ())? = nil) {
         if viewStack.superview == nil {
             if let contentView = contentView {
                 contentView.addSubview(viewStack)
@@ -110,7 +123,7 @@ public final class NSToast: NSView {
                 viewStack.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -10).isActive = true
             }
         }
-        let toast = NSToast(type: type, title: title, detail: detail)
+        let toast = NSToast(type: type, title: title, detail: detail?.trimmingCharacters(in: .whitespacesAndNewlines), primaryAction: primaryAction, onAction: onAction)
 
         viewStack.addArrangedSubview(toast)
 
