@@ -105,6 +105,7 @@ public final class NSToast: NSView {
 
     @objc private func primaryButtonTap(_ sender: NSButton) {
         action?()
+        removeFromSuperview()
     }
 
     public static func info(_ title: String, detail: String? = nil, primaryAction: String? = nil, onAction: (() -> ())? = nil, uniqueDisplayId: String? = nil, expiry: Expiry = defaultExpiryTime) {
