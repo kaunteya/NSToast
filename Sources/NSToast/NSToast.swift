@@ -8,6 +8,9 @@ public final class NSToast: NSView {
 
         var color: NSColor { Self.dict[self]! }
     }
+    public var (maxWidth, minWidth) = (CGFloat(500), CGFloat(200.0))
+    public var detailViewMaxHeight: CGFloat = 100
+    public var maxLinesInDetailView = 5
     private static var viewStack = NSStackView()
     public static var timeInterval: TimeInterval = 4
     private var closeButton: NSButton!
@@ -16,8 +19,7 @@ public final class NSToast: NSView {
     private init(type: Type, title: String, detail: String? = nil) {
         super.init(frame: .zero)
         wantsLayer = true
-        self.widthAnchor.constraint(lessThanOrEqualToConstant: 500).isActive = true
-        widthAnchor.constraint(greaterThanOrEqualToConstant: 200).isActive = true
+        widthAnchor.constraint(greaterThanOrEqualToConstant: minWidth).isActive = true
         self.layer?.backgroundColor = NSColor.windowBackgroundColor.cgColor
 
         let messageTypeIndicatorBar = NSView(frame: .zero)
@@ -40,16 +42,19 @@ public final class NSToast: NSView {
         stack.alignment = .leading
         stack.orientation = .vertical
 
-        if let detail = detail {
+
+        if let detail = detail, detail.isEmpty == false {
             let detTextField = NSTextField(string: detail)
             detTextField.isBordered = false
-            detTextField.backgroundColor = .clear
             detTextField.isEditable = false
             detTextField.textColor = .secondaryLabelColor
-            detTextField.controlSize = .small
-            detTextField.maximumNumberOfLines = 3
+            detTextField.backgroundColor = .clear
+            detTextField.maximumNumberOfLines = maxLinesInDetailView
             detTextField.lineBreakMode = .byWordWrapping
+            detTextField.preferredMaxLayoutWidth = maxWidth
+            detTextField.cell?.isScrollable = false
             stack.addArrangedSubview(detTextField)
+            detTextField.translatesAutoresizingMaskIntoConstraints = false
             detTextField.leadingAnchor.constraint(equalTo: stack.leadingAnchor).isActive = true
             detTextField.trailingAnchor.constraint(equalTo: stack.trailingAnchor).isActive = true
         }
@@ -99,6 +104,7 @@ public final class NSToast: NSView {
             if let contentView = contentView {
                 contentView.addSubview(viewStack)
                 viewStack.orientation = .vertical
+                viewStack.alignment = .trailing
                 viewStack.translatesAutoresizingMaskIntoConstraints = false
                 viewStack.rightAnchor.constraint(equalTo: contentView.rightAnchor, constant: -10).isActive = true
                 viewStack.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -10).isActive = true
