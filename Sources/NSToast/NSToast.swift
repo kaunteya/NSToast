@@ -8,16 +8,18 @@ public final class NSToast: NSView {
 
         var color: NSColor { Self.dict[self]! }
     }
+    public enum Expiry { case timed(TimeInterval), indefinite}
+
     public var (maxWidth, minWidth) = (CGFloat(500), CGFloat(200.0))
     public var detailViewMaxHeight: CGFloat = 100
     public var maxLinesInDetailView = 5
     private static var viewStack = NSStackView()
-    public static var timeInterval: TimeInterval = 4
+    public static var defaultExpiryTime: Expiry = .timed(4)
     private var closeButton: NSButton!
     public static var contentView = NSApplication.shared.mainWindow?.contentView
     var action: (() -> ())?
 
-    private init(type: Type, title: String, detail: String? = nil, primaryAction: String? = nil, onAction: (() -> ())? = nil) {
+    private init(type: Type, title: String, detail: String? = nil, primaryAction: String? = nil, onAction: (() -> ())? = nil, expiry: Expiry) {
         super.init(frame: .zero)
         wantsLayer = true
         widthAnchor.constraint(greaterThanOrEqualToConstant: minWidth).isActive = true
@@ -77,6 +79,12 @@ public final class NSToast: NSView {
             action = onAction
         }
 
+        if case Expiry.timed(let time) = expiry {
+            Timer.scheduledTimer(withTimeInterval: time, repeats: false) { [weak self] _ in
+                self?.removeFromSuperview()
+            }
+        }
+
         closeButton = NSMaterialButton(image: #imageLiteral(resourceName: "Close"), target: self, action: #selector(self.closeButtonTap))
         closeButton.bezelStyle = .regularSquare
         closeButton.isTransparent = true
@@ -99,20 +107,20 @@ public final class NSToast: NSView {
         action?()
     }
 
-    public static func info(_ title: String, detail: String? = nil, primaryAction: String? = nil, onAction: (() -> ())? = nil, uniqueDisplayId: String? = nil) {
-        show(type: .info, title: title, detail: detail, primaryAction: primaryAction, onAction: onAction, uniqueDisplayId: uniqueDisplayId)
+    public static func info(_ title: String, detail: String? = nil, primaryAction: String? = nil, onAction: (() -> ())? = nil, uniqueDisplayId: String? = nil, expiry: Expiry = defaultExpiryTime) {
+        show(type: .info, title: title, detail: detail, primaryAction: primaryAction, onAction: onAction, uniqueDisplayId: uniqueDisplayId, expiry: expiry)
     }
-    public static func success(_ title: String, detail: String? = nil, primaryAction: String? = nil, onAction: (() -> ())? = nil, uniqueDisplayId: String? = nil) {
-        show(type: .success, title: title, detail: detail, primaryAction: primaryAction, onAction: onAction, uniqueDisplayId: uniqueDisplayId)
+    public static func success(_ title: String, detail: String? = nil, primaryAction: String? = nil, onAction: (() -> ())? = nil, uniqueDisplayId: String? = nil, expiry: Expiry = defaultExpiryTime) {
+        show(type: .success, title: title, detail: detail, primaryAction: primaryAction, onAction: onAction, uniqueDisplayId: uniqueDisplayId, expiry: expiry)
     }
-    public static func warning(_ title: String, detail: String? = nil, primaryAction: String? = nil, onAction: (() -> ())? = nil, uniqueDisplayId: String? = nil) {
-        show(type: .warning, title: title, detail: detail, primaryAction: primaryAction, onAction: onAction, uniqueDisplayId: uniqueDisplayId)
+    public static func warning(_ title: String, detail: String? = nil, primaryAction: String? = nil, onAction: (() -> ())? = nil, uniqueDisplayId: String? = nil, expiry: Expiry = defaultExpiryTime) {
+        show(type: .warning, title: title, detail: detail, primaryAction: primaryAction, onAction: onAction, uniqueDisplayId: uniqueDisplayId, expiry: expiry)
     }
-    public static func error(_ title: String, detail: String? = nil, primaryAction: String? = nil, onAction: (() -> ())? = nil, uniqueDisplayId: String? = nil) {
-        show(type: .error, title: title, detail: detail, primaryAction: primaryAction, onAction: onAction, uniqueDisplayId: uniqueDisplayId)
+    public static func error(_ title: String, detail: String? = nil, primaryAction: String? = nil, onAction: (() -> ())? = nil, uniqueDisplayId: String? = nil, expiry: Expiry = defaultExpiryTime) {
+        show(type: .error, title: title, detail: detail, primaryAction: primaryAction, onAction: onAction, uniqueDisplayId: uniqueDisplayId, expiry: expiry)
     }
 
-    private static func show(type: Type, title: String, detail: String? = nil, primaryAction: String? = nil, onAction: (() -> ())? = nil, uniqueDisplayId: String? = nil) {
+    private static func show(type: Type, title: String, detail: String?, primaryAction: String?, onAction: (() -> ())?, uniqueDisplayId: String?, expiry: Expiry) {
         if let uniqueDisplayId = uniqueDisplayId {
             if UserDefaults.standard.string(forKey: uniqueDisplayId) != nil {
                 return
@@ -131,12 +139,8 @@ public final class NSToast: NSView {
                 viewStack.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -10).isActive = true
             }
         }
-        let toast = NSToast(type: type, title: title, detail: detail?.trimmingCharacters(in: .whitespacesAndNewlines), primaryAction: primaryAction, onAction: onAction)
+        let toast = NSToast(type: type, title: title, detail: detail?.trimmingCharacters(in: .whitespacesAndNewlines), primaryAction: primaryAction, onAction: onAction, expiry: expiry)
 
         viewStack.addArrangedSubview(toast)
-
-        Timer.scheduledTimer(withTimeInterval: timeInterval, repeats: false) { _ in
-            toast.removeFromSuperview()
-        }
     }
 }
