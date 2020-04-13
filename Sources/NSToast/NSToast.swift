@@ -24,18 +24,21 @@ public final class NSToast: NSView {
         wantsLayer = true
         widthAnchor.constraint(greaterThanOrEqualToConstant: minWidth).isActive = true
         self.layer?.backgroundColor = NSColor.windowBackgroundColor.cgColor
+        self.layer?.borderWidth = 0.5
+        self.layer?.borderColor = type.color.cgColor
+        self.layer?.cornerRadius = 3.0
 
-        let messageTypeIndicatorBar = NSView(frame: .zero)
-        messageTypeIndicatorBar.wantsLayer = true
-        messageTypeIndicatorBar.layer?.backgroundColor = type.color.cgColor
-        self.addSubview(messageTypeIndicatorBar)
-        messageTypeIndicatorBar.translatesAutoresizingMaskIntoConstraints = false
-        NSLayoutConstraint.activate([
-            messageTypeIndicatorBar.topAnchor.constraint(equalTo: topAnchor),
-            messageTypeIndicatorBar.leftAnchor.constraint(equalTo: leftAnchor),
-            messageTypeIndicatorBar.bottomAnchor.constraint(equalTo: bottomAnchor),
-            messageTypeIndicatorBar.widthAnchor.constraint(equalToConstant: 2)
-        ])
+//        let messageTypeIndicatorBar = NSView(frame: .zero)
+//        messageTypeIndicatorBar.wantsLayer = true
+//        messageTypeIndicatorBar.layer?.backgroundColor = type.color.cgColor
+//        self.addSubview(messageTypeIndicatorBar)
+//        messageTypeIndicatorBar.translatesAutoresizingMaskIntoConstraints = false
+//        NSLayoutConstraint.activate([
+//            messageTypeIndicatorBar.topAnchor.constraint(equalTo: topAnchor, constant: 2),
+//            messageTypeIndicatorBar.leftAnchor.constraint(equalTo: leftAnchor, constant: 1),
+//            messageTypeIndicatorBar.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -2),
+//            messageTypeIndicatorBar.widthAnchor.constraint(equalToConstant: 2)
+//        ])
 
         let titleTextField = NSTextField(string: title)
         titleTextField.isBordered = false
@@ -84,14 +87,13 @@ public final class NSToast: NSView {
                 self?.removeFromSuperview()
             }
         }
-
-        closeButton = NSMaterialButton(image: #imageLiteral(resourceName: "Close"), target: self, action: #selector(self.closeButtonTap))
+        closeButton = NSMaterialButton(image: NSImage(named: NSImage.stopProgressTemplateName)!, target: self, action: #selector(self.closeButtonTap))
         closeButton.bezelStyle = .regularSquare
         closeButton.isTransparent = true
         addSubview(closeButton)
         closeButton.translatesAutoresizingMaskIntoConstraints = false
-        closeButton.topAnchor.constraint(equalTo: topAnchor).isActive = true
-        closeButton.rightAnchor.constraint(equalTo: rightAnchor).isActive = true
+        closeButton.topAnchor.constraint(equalTo: topAnchor, constant: 3).isActive = true
+        closeButton.rightAnchor.constraint(equalTo: rightAnchor, constant: -3).isActive = true
     }
 
     required init?(coder decoder: NSCoder) {
