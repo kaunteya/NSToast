@@ -6,7 +6,7 @@ import PackageDescription
 let package = Package(
     name: "NSToast",
     platforms: [
-        .macOS("10.15.0"),
+        .macOS("10.14"),
     ],
     products: [
         // Products define the executables and libraries produced by a package, and make them visible to other packages.
