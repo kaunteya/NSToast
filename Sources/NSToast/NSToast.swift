@@ -125,10 +125,11 @@ public final class NSToast: NSView {
 
     private static func show(type: Type, title: String, detail: String?, primaryAction: String?, onAction: (() -> ())?, uniqueDisplayId: String?, expiry: Expiry) {
         if let uniqueDisplayId = uniqueDisplayId {
-            if UserDefaults.standard.string(forKey: uniqueDisplayId) != nil {
+            let key = "NSToast \(uniqueDisplayId)"
+            if UserDefaults.standard.string(forKey: key) != nil {
                 return
             } else {
-                UserDefaults.standard.set(true, forKey: uniqueDisplayId)
+                UserDefaults.standard.set(true, forKey: key)
             }
         }
 
