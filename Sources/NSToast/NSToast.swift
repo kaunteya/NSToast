@@ -144,6 +144,10 @@ public final class NSToast: NSView {
             }
         }
         let toast = NSToast(type: type, title: title, detail: detail?.trimmingCharacters(in: .whitespacesAndNewlines), primaryAction: primaryAction, onAction: onAction, expiry: expiry)
+        toast.shadow = NSShadow()
+        toast.layer?.shadowOpacity = 0.3
+        toast.layer?.shadowColor = NSColor.gray.cgColor
+        toast.layer?.shadowRadius = 5
 
         viewStack.addArrangedSubview(toast)
     }
